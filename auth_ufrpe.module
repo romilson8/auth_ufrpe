@@ -1,0 +1,17 @@
+<?php
+/**
+ * @file
+ * Authenticate UFRPE associates
+ *
+ * Allow user to authenticate and return user infos
+ * for use in the CPA webform
+ */
+
+/**
+ * Implementation of hook_menu().
+ */
+
+function auth_ufrpe_menu()
+{
+  
+}

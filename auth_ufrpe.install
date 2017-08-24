@@ -1,0 +1,44 @@
+<?php
+/**
+ * @file
+ * UFRPE Authentication module
+ */
+
+/**
+ * Implements hook_install()
+ */
+
+function auth_ufrpe_schema()
+{
+  $schema['auth_ufrpe'] = array(
+    'description' => 'The UFRPE authentication table',
+    'fields' => array(
+      'auth_id' => array(
+        'description' => 'The primary key identifier for authentication',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'username' => array(
+        'description' => 'The username used to authenticate',
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+      ),
+      'password' => array(
+        'description' => 'The password used in authentication process',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('auth_id'),
+  );
+
+  return $schema;
+}
+
+function auth_ufrpe_install()
+{
+  # Code...
+}
