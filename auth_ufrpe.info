@@ -4,4 +4,5 @@ name = "Autentica UFRPE"
 version = "7.x-1.0"
 files[] = auth_ufrpe.install
 files[] = auth_ufrpe.module
+files[] = auth_ufrpe.inc
 dependencies[] = webform
