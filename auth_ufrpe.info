@@ -1,6 +1,7 @@
 core = "7.x"
 description = "Módulo para autenticação de associados da UFRPE"
-name = "Autentica UFRPE"
+name = "UFRPE Autenticada"
+package = "UFRPE"
 version = "7.x-1.0"
 files[] = auth_ufrpe.install
 files[] = auth_ufrpe.module

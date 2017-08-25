@@ -23,4 +23,6 @@ function auth_ufrpe_menu()
     'access arguments' => array('administer users site configuration'),
     'file' => 'auth_ufrpe.inc',
   );
+
+  return $items;
 }
