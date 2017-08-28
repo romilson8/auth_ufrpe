@@ -36,6 +36,10 @@ function auth_ufrpe_form($form, &$form_state)
 
 function auth_ufrpe_submit($form, &$form_state)
 {
+  if ($form['auth_ufrpe_username']['#value'] == '' || $form[auth_ufrpe_password]['#value'] == '') {
+    echo "<script>alert('Campos Login e Senha requeridos para autenticação.');</script>";
+    return;
+  }
   // URL and data used to get token
   $url = 'http://ava.ufrpe.br/login/token.php';
   $data = array(
@@ -51,7 +55,12 @@ function auth_ufrpe_submit($form, &$form_state)
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
   $response = json_decode(curl_exec($curl));
   curl_close($curl);
-  get_user_info($response);
+  if (isset($response->token)) {
+    get_user_info($response);
+  } else {
+    echo "<script>alert('Login ou Senha incorretos. Tente novamente.');</script>";
+    return;
+  }
 }
 
 function get_user_info($response)
@@ -87,6 +96,6 @@ function get_advanced_user_info($subresponse, $response)
   curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
   $fullresponse = json_decode(curl_exec($curl));
-  echo "<script>alert(".var_dump($fullresponse).");</script>";
+  echo "<script>alert(".var_dump($fullresponse[0]).");</script>";
   curl_close($curl);
 }
