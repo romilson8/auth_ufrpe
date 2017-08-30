@@ -141,7 +141,7 @@ function get_advanced_user_info($subresponse, $response)
   $fullresponse_body_encoded = drupal_http_request($url, $options)->data;
   $fullresponse_body_decoded = drupal_json_decode($fullresponse_body_encoded);
 
-  //drupal_set_message(t($fullresponse_body_decoded[0]['department']),'warning');
+  drupal_set_message(t(implode('|',$fullresponse_body_decoded[0])),'warning');
 
   // Recording authentication on database
   $record = array(
