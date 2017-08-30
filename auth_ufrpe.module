@@ -14,14 +14,24 @@
 function auth_ufrpe_menu()
 {
   $items['admin/autenticacao-ufrpe'] = array(
-    'menu_name' => 'Management',
     'title' => 'Autenticação UFRPE',
+    'description' => 'Página de autenticação',
     'page callback' => 'drupal_get_form',
     'page title' => 'Autenticação UFRPE',
     'page arguments' => array('auth_ufrpe_form'),
     'type' => MENU_NORMAL_ITEM,
     'access arguments' => array('administer users site configuration'),
     'file' => 'auth_ufrpe.inc',
+  );
+
+  $items['admin/config/system/auth_ufrpe/settings'] = array(
+    'title' => 'Configurar autenticação UFRPE',
+    'description' => 'Configurar módulo de autenticação',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('auth_ufrpe_settings_form'),
+    'type' => MENU_NORMAL_ITEM,
+    'access arguments' => array('administer site configuration'),
+    'file' => 'auth_ufrpe.admin.inc',
   );
 
   return $items;

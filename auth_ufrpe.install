@@ -10,6 +10,7 @@
 
 function auth_ufrpe_schema()
 {
+  // Defines specifications for auth_ufrpe table
   $schema['auth_ufrpe'] = array(
     'description' => 'The UFRPE authentication table',
     'fields' => array(
@@ -19,26 +20,75 @@ function auth_ufrpe_schema()
         'unsigned' => TRUE,
         'not null' => TRUE,
       ),
-      'username' => array(
-        'description' => 'The username used to authenticate',
-        'type' => 'varchar',
-        'length' => 100,
+      'userid' => array(
+        'description' => 'The id of the user authenticated',
+        'type' => 'int',
+        'unsigned' => TRUE,
         'not null' => TRUE,
       ),
-      'password' => array(
-        'description' => 'The password used in authentication process',
-        'type' => 'varchar',
-        'length' => 255,
+      'date' => array(
+        'description' => 'The date of the authentication',
+        'mysql_type' => 'DATETIME',
         'not null' => TRUE,
       ),
     ),
     'primary key' => array('auth_id'),
   );
 
-  return $schema;
-}
+  // Defines specifications for auth_ufrpe_settings table
+  $schema['auth_ufrpe_settings'] = array(
+    'description' => 'The UFRPE authentication settings table',
+    'fields' => array(
+      'settings_id' => array(
+        'description' => 'The primary key identifier of the configuration',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'doc_pre' => array(
+        'description' => 'URL to presential teachers webform',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'dis_pre' => array(
+        'description' => 'URL to presential students webform',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'tec_pre' => array(
+        'description' => 'URL to presential technicians webform',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'doc_ead' => array(
+        'description' => 'URL to distance education teachers webform',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'dis_ead' => array(
+        'description' => 'URL to distance education students webform',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'tec_ead' => array(
+        'description' => 'URL to distance education technicians webform',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'date' => array(
+        'description' => 'The time when the settings were updated',
+        'mysql_type' => 'DATETIME',
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('settings_id'),
+  );
 
-function auth_ufrpe_install()
-{
-  # Code...
+  return $schema;
 }

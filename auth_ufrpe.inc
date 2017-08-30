@@ -26,7 +26,6 @@ function auth_ufrpe_form($form, &$form_state)
     ),
   );
 
-  $form['#submit'][] = 'auth_ufrpe_submit';
   return $form;
 }
 
@@ -37,8 +36,9 @@ function auth_ufrpe_form($form, &$form_state)
 function auth_ufrpe_submit($form, &$form_state)
 {
   if ($form['auth_ufrpe_username']['#value'] == '' || $form[auth_ufrpe_password]['#value'] == '') {
-    echo "<script>alert('Campos Login e Senha requeridos para autenticação.');</script>";
-    return;
+    drupal_set_message('Login e Senha requiridos para autenticação.');
+    header('Refresh:0');
+    //return;
   }
   // URL and data used to get token
   $url = 'http://ava.ufrpe.br/login/token.php';
@@ -58,10 +58,18 @@ function auth_ufrpe_submit($form, &$form_state)
   if (isset($response->token)) {
     get_user_info($response);
   } else {
-    echo "<script>alert('Login ou Senha incorretos. Tente novamente.');</script>";
-    return;
+    drupal_set_message('Login ou Senha incorretos, tente novamente.');
+    header('Refresh:0');
+    //return;
   }
 }
+
+/**
+ * Get user basic information
+ *
+ * @param $response
+ *   The response from the function above (JSON)
+ */
 
 function get_user_info($response)
 {
@@ -81,6 +89,16 @@ function get_user_info($response)
   get_advanced_user_info($subresponse, $response);
 }
 
+/**
+ * Get user detailed information
+ *
+ * @param $response
+ *  The response of the first request (contains token)
+ *
+ * @param $subresponse
+ *  The response of the second request (contains user id)
+ */
+
 function get_advanced_user_info($subresponse, $response)
 {
   // URL and data used to get detailed information about the user
@@ -96,6 +114,15 @@ function get_advanced_user_info($subresponse, $response)
   curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
   $fullresponse = json_decode(curl_exec($curl));
-  echo "<script>alert(".var_dump($fullresponse[0]).");</script>";
+  //echo "<script>console.log(".$fullresponse[0]->fullname.");</script>";
   curl_close($curl);
+
+  // Recording authentication on database
+  $record = array(
+    'auth_id' => NULL,
+    'userid' => $subresponse->userid,
+    'date' => date('Y-m-d H:m:s'),
+  );
+
+  drupal_write_record('auth_ufrpe', $record);
 }
