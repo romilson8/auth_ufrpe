@@ -21,11 +21,12 @@ function auth_ufrpe_form($form, &$form_state)
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Autenticar'),
-    '#ajax' => array(
+    /*'#ajax' => array(
       'callback' => 'auth_ufrpe_submit',
-    ),
+    ),*/
   );
 
+  $form['#submit'][] = 'auth_ufrpe_submit';
   return $form;
 }
 
@@ -35,11 +36,10 @@ function auth_ufrpe_form($form, &$form_state)
 
 function auth_ufrpe_submit($form, &$form_state)
 {
-  if ($form['auth_ufrpe_username']['#value'] == '' || $form[auth_ufrpe_password]['#value'] == '') {
-    drupal_set_message('Login e Senha requiridos para autenticação.');
-    header('Refresh:0');
-    //return;
-  }
+  /*if ($form['auth_ufrpe_username']['#value'] == '' || $form[auth_ufrpe_password]['#value'] == '') {
+    drupal_set_message(t('Login e Senha requiridos para autenticação.'), 'error');
+    return;
+  }*/
   // URL and data used to get token
   $url = 'http://ava.ufrpe.br/login/token.php';
   $data = array(
@@ -47,21 +47,28 @@ function auth_ufrpe_submit($form, &$form_state)
     'password' => $form['auth_ufrpe_password']['#value'],
     'service' => 'moodle_mobile_app',
   );
+  $options = array(
+    'data' => drupal_http_build_query($data),
+    'method' => 'POST',
+    'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
+  );
 
   // Building server request
-  $curl = curl_init($url);
+  /*$curl = curl_init($url);
   curl_setopt($curl, CURLOPT_POST, TRUE);
   curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
   $response = json_decode(curl_exec($curl));
-  curl_close($curl);
-  if (isset($response->token)) {
-    get_user_info($response);
-  } else {
-    drupal_set_message('Login ou Senha incorretos, tente novamente.');
-    header('Refresh:0');
-    //return;
+  curl_close($curl);*/
+
+  $response_body_encoded = drupal_http_request($url, $options)->data;
+  $response_body_decoded = drupal_json_decode($response_body_encoded);
+  //drupal_set_message(t($response_body_decoded['token']), 'warning');
+  if (!isset($response_body_decoded['token'])) {
+    drupal_set_message(t('Login ou Senha incorretos, tente novamente.'), 'error');
+    return;
   }
+  get_user_info($response_body_decoded);
 }
 
 /**
@@ -77,16 +84,25 @@ function get_user_info($response)
   $url = 'http://ava.ufrpe.br/webservice/rest/server.php?moodlewsrestformat=json';
   $data = array(
     'wsfunction' => 'core_webservice_get_site_info',
-    'wstoken' => $response->token,
+    'wstoken' => $response['token'],
+  );
+  $options = array(
+    'data' => drupal_http_build_query($data),
+    'method' => 'POST',
+    'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
   );
 
-  $curl = curl_init($url);
+  /*$curl = curl_init($url);
   curl_setopt($curl, CURLOPT_POST, TRUE);
   curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
   $subresponse = json_decode(curl_exec($curl));
-  curl_close($curl);
-  get_advanced_user_info($subresponse, $response);
+  curl_close($curl);*/
+
+  $subresponse_body_encoded = drupal_http_request($url, $options)->data;
+  $subresponse_body_decoded = drupal_json_decode($subresponse_body_encoded);
+  //drupal_set_message(t($subresponse_body_decoded['sitename']),'warning');
+  get_advanced_user_info($subresponse_body_decoded, $response);
 }
 
 /**
@@ -105,22 +121,32 @@ function get_advanced_user_info($subresponse, $response)
   $url = 'http://ava.ufrpe.br/webservice/rest/server.php?moodlewsrestformat=json';
   $data = array(
     'wsfunction' => 'core_user_get_users_by_id',
-    'wstoken' => $response->token,
-    'userids[0]' => $subresponse->userid,
+    'wstoken' => $response['token'],
+    'userids[0]' => $subresponse['userid'],
+  );
+  $options = array(
+    'data' => drupal_http_build_query($data),
+    'method' => 'POST',
+    'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
   );
 
-  $curl = curl_init($url);
+  /*$curl = curl_init($url);
   curl_setopt($curl, CURLOPT_POST, TRUE);
   curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
   $fullresponse = json_decode(curl_exec($curl));
   //echo "<script>console.log(".$fullresponse[0]->fullname.");</script>";
-  curl_close($curl);
+  curl_close($curl);*/
+
+  $fullresponse_body_encoded = drupal_http_request($url, $options)->data;
+  $fullresponse_body_decoded = drupal_json_decode($fullresponse_body_encoded);
+
+  //drupal_set_message(t($fullresponse_body_decoded[0]['department']),'warning');
 
   // Recording authentication on database
   $record = array(
     'auth_id' => NULL,
-    'userid' => $subresponse->userid,
+    'userid' => $subresponse['userid'],
     'date' => date('Y-m-d H:m:s'),
   );
 
