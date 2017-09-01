@@ -76,7 +76,6 @@ function auth_ufrpe_settings_form_submit($form, &$form_state)
 {
   // Get current settings and insert on database
   $record = array(
-    'settings_id' => NULL,
     'doc_pre' => $form_state['values']['docente-presencial'],
     'dis-pre' => $form_state['values']['discente-presencial'],
     'tec-pre' => $form_state['values']['tecnico-presencial'],

@@ -21,9 +21,6 @@ function auth_ufrpe_form($form, &$form_state)
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Autenticar'),
-    /*'#ajax' => array(
-      'callback' => 'auth_ufrpe_submit',
-    ),*/
   );
 
   $form['#submit'][] = 'auth_ufrpe_submit';
@@ -36,10 +33,6 @@ function auth_ufrpe_form($form, &$form_state)
 
 function auth_ufrpe_submit($form, &$form_state)
 {
-  /*if ($form['auth_ufrpe_username']['#value'] == '' || $form[auth_ufrpe_password]['#value'] == '') {
-    drupal_set_message(t('Login e Senha requiridos para autenticação.'), 'error');
-    return;
-  }*/
   // URL and data used to get token
   $url = 'http://ava.ufrpe.br/login/token.php';
   $data = array(
@@ -63,7 +56,6 @@ function auth_ufrpe_submit($form, &$form_state)
 
   $response_body_encoded = drupal_http_request($url, $options)->data;
   $response_body_decoded = drupal_json_decode($response_body_encoded);
-  //drupal_set_message(t($response_body_decoded['token']), 'warning');
   if (!isset($response_body_decoded['token'])) {
     drupal_set_message(t('Login ou Senha incorretos, tente novamente.'), 'error');
     return;
@@ -101,7 +93,6 @@ function get_user_info($response)
 
   $subresponse_body_encoded = drupal_http_request($url, $options)->data;
   $subresponse_body_decoded = drupal_json_decode($subresponse_body_encoded);
-  //drupal_set_message(t($subresponse_body_decoded['sitename']),'warning');
   get_advanced_user_info($subresponse_body_decoded, $response);
 }
 
@@ -135,7 +126,6 @@ function get_advanced_user_info($subresponse, $response)
   curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
   $fullresponse = json_decode(curl_exec($curl));
-  //echo "<script>console.log(".$fullresponse[0]->fullname.");</script>";
   curl_close($curl);*/
 
   $fullresponse_body_encoded = drupal_http_request($url, $options)->data;
@@ -145,7 +135,7 @@ function get_advanced_user_info($subresponse, $response)
 
   // Recording authentication on database
   $record = array(
-    'auth_id' => NULL,
+    //'auth_id' => NULL,
     'userid' => $subresponse['userid'],
     'date' => date('Y-m-d H:m:s'),
   );
