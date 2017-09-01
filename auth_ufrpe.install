@@ -14,25 +14,51 @@ function auth_ufrpe_schema()
   $schema['auth_ufrpe'] = array(
     'description' => 'The UFRPE authentication table',
     'fields' => array(
-      'auth_id' => array(
-        'description' => 'The primary key identifier for authentication',
-        'type' => 'serial',
-        'unsigned' => TRUE,
+      'cpf' => array(
+        'description' => 'The CPF of the user who submitted',
+        'type' => 'varchar',
+        'length' => 11,
         'not null' => TRUE,
       ),
-      'userid' => array(
-        'description' => 'The id of the user authenticated',
+      'nome' => array(
+        'description' => 'The name of the user that submitted',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'ano' => array(
+        'description' => 'The year of the submission',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'semestre' => array(
+        'description' => 'The semester which submission was made',
         'type' => 'int',
+        'size' => 'tiny',
         'unsigned' => TRUE,
         'not null' => TRUE,
       ),
-      'date' => array(
-        'description' => 'The date of the authentication',
-        'mysql_type' => 'DATETIME',
+      'orgao' => array(
+        'description' => 'The department of the user',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ),
+      'perfil' => array(
+        'description' => 'The class of the user (Teacher, Student or Technician)',
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+      ),
+      'modalidade' => array(
+        'description' => 'The genre of education',
+        'type' => 'varchar',
+        'length' => 10,
         'not null' => TRUE,
       ),
     ),
-    'primary key' => array('auth_id'),
+    'primary key' => array('cpf', 'ano', 'semestre'),
   );
 
   // Defines specifications for auth_ufrpe_settings table
@@ -83,6 +109,7 @@ function auth_ufrpe_schema()
       ),
       'date' => array(
         'description' => 'The time when the settings were updated',
+        'type' => 'varchar',
         'mysql_type' => 'DATETIME',
         'not null' => TRUE,
       ),
