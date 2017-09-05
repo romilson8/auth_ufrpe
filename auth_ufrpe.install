@@ -29,7 +29,7 @@ function auth_ufrpe_schema()
       'ano' => array(
         'description' => 'The year of the submission',
         'type' => 'varchar',
-        'length' => 255,
+        'length' => 4,
         'not null' => TRUE,
       ),
       'semestre' => array(
@@ -48,7 +48,7 @@ function auth_ufrpe_schema()
       'perfil' => array(
         'description' => 'The class of the user (Teacher, Student or Technician)',
         'type' => 'varchar',
-        'length' => 50,
+        'length' => 8,
         'not null' => TRUE,
       ),
       'modalidade' => array(
@@ -107,14 +107,20 @@ function auth_ufrpe_schema()
         'length' => 255,
         'not null' => TRUE,
       ),
-      'date' => array(
-        'description' => 'The time when the settings were updated',
+      'ano' => array(
+        'description' => 'The year when the settings were updated',
         'type' => 'varchar',
-        'mysql_type' => 'DATETIME',
+        'length' => 4,
+        'not null' => TRUE,
+      ),
+      'semestre' => array(
+        'description' => 'The semester when the settings were updated',
+        'type' => 'int',
+        'size' => 'tiny',
         'not null' => TRUE,
       ),
     ),
-    'primary key' => array('settings_id'),
+    'primary key' => array('ano', 'semestre', 'settings_id'),
   );
 
   return $schema;

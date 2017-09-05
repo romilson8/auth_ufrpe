@@ -131,14 +131,42 @@ function get_advanced_user_info($subresponse, $response)
   $fullresponse_body_encoded = drupal_http_request($url, $options)->data;
   $fullresponse_body_decoded = drupal_json_decode($fullresponse_body_encoded);
 
-  drupal_set_message(t(implode('|',$fullresponse_body_decoded[0])),'warning');
+  // drupal_set_message(t(($fullresponse_body_decoded[0]['fullname'])),'warning');
 
   // Recording authentication on database
   $record = array(
-    //'auth_id' => NULL,
-    'userid' => $subresponse['userid'],
-    'date' => date('Y-m-d H:m:s'),
+    'cpf' => $fullresponse_body_decoded[0]['idnumber'],
+    'nome' => $fullresponse_body_decoded[0]['fullname'],
+    'ano' => date('Y'),
+    'semestre' => getSemester((int) date('m')),
+    'orgao' => $fullresponse_body_decoded[0]['department'],
+    'perfil' => 'DISCENTE',
+    'modalidade' => 'PRESENCIAL',
   );
 
-  drupal_write_record('auth_ufrpe', $record);
+  try {
+    drupal_write_record('auth_ufrpe', $record);
+  } catch (Exception $e) {
+    // In case of double authentication
+    // at same period
+    drupal_set_message(t('Usuário já autenticado neste período'),'error');
+  }
+}
+
+/**
+ * Get current semester
+ *
+ * @param $month
+ *  The current month
+ */
+
+function getSemester($month)
+{
+  $semester = null;
+  if ($month <= 6) {
+    $semester = 1;
+  } else {
+    $semester = 2;
+  }
+  return $semester;
 }
