@@ -4,6 +4,9 @@
  * Administration page callbacks for the auth_ufrpe module.
  */
 
+// Importing functions from file
+require_once 'custom_functions.php';
+
 /**
  * Form builder. Set auth_ufrpe settings.
  *
@@ -76,14 +79,15 @@ function auth_ufrpe_settings_form_submit($form, &$form_state)
 {
   // Get current settings and insert on database
   $record = array(
-    'doc_pre' => $form_state['values']['docente-presencial'],
-    'dis-pre' => $form_state['values']['discente-presencial'],
-    'tec-pre' => $form_state['values']['tecnico-presencial'],
-    'doc_ead' => $form_state['values']['docente-ead'],
-    'dis-ead' => $form_state['values']['discente-ead'],
-    'tec-ead' => $form_state['values']['tecnico-ead'],
-    'date' => date('Y-m-d H:m:s'),
+    'doc_pre' => $form['auth_ufrpe_cpa_urls']['docente-presencial']['#value'],
+    'dis-pre' => $form['auth_ufrpe_cpa_urls']['discente-presencial']['#value'],
+    'tec-pre' => $form['auth_ufrpe_cpa_urls']['tecnico-presencial']['#value'],
+    'doc_ead' => $form['auth_ufrpe_cpa_urls']['docente-ead']['#value'],
+    'dis-ead' => $form['auth_ufrpe_cpa_urls']['discente-ead']['#value'],
+    'tec-ead' => $form['auth_ufrpe_cpa_urls']['tecnico-ead']['#value'],
+    'ano' => date('Y'),
+    'semestre' => getSemester((int) date('m')),
   );
 
-  drupal_write_record('auth_ufrpe_conf', $record);
+  drupal_write_record('auth_ufrpe_settings', $record);
 }

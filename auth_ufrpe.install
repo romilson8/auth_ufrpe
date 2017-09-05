@@ -2,6 +2,8 @@
 /**
  * @file
  * UFRPE Authentication module
+ *
+ * @author Matheus Campos da Silva, 2017
  */
 
 /**
@@ -65,12 +67,6 @@ function auth_ufrpe_schema()
   $schema['auth_ufrpe_settings'] = array(
     'description' => 'The UFRPE authentication settings table',
     'fields' => array(
-      'settings_id' => array(
-        'description' => 'The primary key identifier of the configuration',
-        'type' => 'serial',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-      ),
       'doc_pre' => array(
         'description' => 'URL to presential teachers webform',
         'type' => 'varchar',
@@ -120,7 +116,7 @@ function auth_ufrpe_schema()
         'not null' => TRUE,
       ),
     ),
-    'primary key' => array('ano', 'semestre', 'settings_id'),
+    'primary key' => array('ano', 'semestre'),
   );
 
   return $schema;

@@ -1,6 +1,16 @@
 <?php
 
 /**
+ * @file
+ * Authentication form
+ *
+ * @author Matheus Campos da Silva, 2017
+ */
+
+// Importing functions from file
+require_once 'custom_functions.php';
+
+/**
  * Implementation of authentication form
  */
 
@@ -151,22 +161,4 @@ function get_advanced_user_info($subresponse, $response)
     // at same period
     drupal_set_message(t('Usuário já autenticado neste período'),'error');
   }
-}
-
-/**
- * Get current semester
- *
- * @param $month
- *  The current month
- */
-
-function getSemester($month)
-{
-  $semester = null;
-  if ($month <= 6) {
-    $semester = 1;
-  } else {
-    $semester = 2;
-  }
-  return $semester;
 }
