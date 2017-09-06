@@ -2,6 +2,8 @@
 /**
  * @file
  * Administration page callbacks for the auth_ufrpe module.
+ *
+ * @author Matheus Campos da Silva, 2017
  */
 
 // Importing functions from file
@@ -18,45 +20,53 @@ function auth_ufrpe_settings_form($form, &$form_state)
 {
   // Define what will be the urls of the CPA webforms
 
-  $form['auth_ufrpe_cpa_urls'] = array(
+  $form['auth_ufrpe_cpa_presential_urls'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Links para webforms CPA'),
+    '#title' => t('Links para webforms CPA Presencial'),
     '#collapsible' => FALSE,
     '#collapsed' => FALSE,
-    '#description' => 'Links para redirecionamento do usuário após a autenticação ser concluída.',
+    '#description' => 'Links dos webforms para a modality presencial.',
   );
 
-  $form['auth_ufrpe_cpa_urls']['docente-presencial'] = array(
+  $form['auth_ufrpe_cpa_presential_urls']['docente-presencial'] = array(
     '#type' => 'textfield',
     '#title' => t('Docente presencial:'),
     '#required' => TRUE,
   );
 
-  $form['auth_ufrpe_cpa_urls']['discente-presencial'] = array(
+  $form['auth_ufrpe_cpa_presential_urls']['discente-presencial'] = array(
     '#type' => 'textfield',
     '#title' => t('Discente presencial:'),
     '#required' => TRUE,
   );
 
-  $form['auth_ufrpe_cpa_urls']['tecnico-presencial'] = array(
+  $form['auth_ufrpe_cpa_presential_urls']['tecnico-presencial'] = array(
     '#type' => 'textfield',
     '#title' => t('Técnico presencial:'),
     '#required' => TRUE,
   );
 
-  $form['auth_ufrpe_cpa_urls']['docente-ead'] = array(
+  $form['auth_ufrpe_cpa_e-learning_urls'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Links para webforms CPA EAD'),
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE,
+    '#description' => 'Links dos webforms para a modality EAD.'
+  );
+
+  $form['auth_ufrpe_cpa_e-learning_urls']['docente-ead'] = array(
     '#type' => 'textfield',
     '#title' => t('Docente EAD:'),
     '#required' => TRUE,
   );
 
-  $form['auth_ufrpe_cpa_urls']['discente-ead'] = array(
+  $form['auth_ufrpe_cpa_e-learning_urls']['discente-ead'] = array(
     '#type' => 'textfield',
     '#title' => t('Discente EAD:'),
     '#required' => TRUE,
   );
 
-  $form['auth_ufrpe_cpa_urls']['tecnico-ead'] = array(
+  $form['auth_ufrpe_cpa_e-learning_urls']['tecnico-ead'] = array(
     '#type' => 'textfield',
     '#title' => t('Técnico EAD:'),
     '#required' => TRUE,
@@ -77,17 +87,44 @@ function auth_ufrpe_settings_form($form, &$form_state)
 
 function auth_ufrpe_settings_form_submit($form, &$form_state)
 {
+  /**
+   * Analyze if the given urls are valid
+   */
+
+  // Set modalities and profiles
+  $modalities = array('-presencial' => '_presential_', '-ead' => '_e-learning_');
+  $profiles = array('docente', 'discente', 'tecnico');
+
+  // Process urls given
+  foreach ($modalities as $modality_suffix => $modality_fieldset) {
+    foreach ($profiles as $profile) {
+      $currentURL = $form['auth_ufrpe_cpa'.$modality_fieldset.'urls'][$profile.$modality_suffix]['#value'];
+      if (url_is_external($currentURL)) {
+        // URL must be internal
+        drupal_set_message(t('Todos os links devem ser internos'), 'error');
+        return;
+      }
+    }
+  }
+
   // Get current settings and insert on database
   $record = array(
-    'doc_pre' => $form['auth_ufrpe_cpa_urls']['docente-presencial']['#value'],
-    'dis-pre' => $form['auth_ufrpe_cpa_urls']['discente-presencial']['#value'],
-    'tec-pre' => $form['auth_ufrpe_cpa_urls']['tecnico-presencial']['#value'],
-    'doc_ead' => $form['auth_ufrpe_cpa_urls']['docente-ead']['#value'],
-    'dis-ead' => $form['auth_ufrpe_cpa_urls']['discente-ead']['#value'],
-    'tec-ead' => $form['auth_ufrpe_cpa_urls']['tecnico-ead']['#value'],
+    'doc_pre' => $form['auth_ufrpe_cpa_presential_urls']['docente-presencial']['#value'],
+    'dis_pre' => $form['auth_ufrpe_cpa_presential_urls']['discente-presencial']['#value'],
+    'tec_pre' => $form['auth_ufrpe_cpa_presential_urls']['tecnico-presencial']['#value'],
+    'doc_ead' => $form['auth_ufrpe_cpa_e-learning_urls']['docente-ead']['#value'],
+    'dis_ead' => $form['auth_ufrpe_cpa_e-learning_urls']['discente-ead']['#value'],
+    'tec_ead' => $form['auth_ufrpe_cpa_e-learning_urls']['tecnico-ead']['#value'],
     'ano' => date('Y'),
     'semestre' => getSemester((int) date('m')),
   );
 
-  drupal_write_record('auth_ufrpe_settings', $record);
+  try {
+    drupal_write_record('auth_ufrpe_settings', $record);
+  } catch (Exception $e) {
+    // Administer must not update settings more than
+    // one time per semester
+    drupal_set_message(t('Os links já foram atualizados este período. Por favor entrar em contato com o suporte do NTI-UFRPE.'), 'error');
+    drupal_set_message(t('Contato: suporte.nti@ufrpe.br'), 'error');
+  }
 }
