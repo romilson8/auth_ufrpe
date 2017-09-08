@@ -56,20 +56,16 @@ function auth_ufrpe_submit($form, &$form_state)
     'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
   );
 
-  // Building server request
-  /*$curl = curl_init($url);
-  curl_setopt($curl, CURLOPT_POST, TRUE);
-  curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
-  curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-  $response = json_decode(curl_exec($curl));
-  curl_close($curl);*/
-
+  // Decode data (JSON) from request body
   $response_body_encoded = drupal_http_request($url, $options)->data;
   $response_body_decoded = drupal_json_decode($response_body_encoded);
+
+  // In case of incorrect passoword/username
   if (!isset($response_body_decoded['token'])) {
     drupal_set_message(t('Login ou Senha incorretos, tente novamente.'), 'error');
     return;
   }
+
   get_user_info($response_body_decoded);
 }
 
@@ -94,15 +90,10 @@ function get_user_info($response)
     'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
   );
 
-  /*$curl = curl_init($url);
-  curl_setopt($curl, CURLOPT_POST, TRUE);
-  curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
-  curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-  $subresponse = json_decode(curl_exec($curl));
-  curl_close($curl);*/
-
+  // Decode data (JSON) from request body
   $subresponse_body_encoded = drupal_http_request($url, $options)->data;
   $subresponse_body_decoded = drupal_json_decode($subresponse_body_encoded);
+
   get_advanced_user_info($subresponse_body_decoded, $response);
 }
 
@@ -131,17 +122,9 @@ function get_advanced_user_info($subresponse, $response)
     'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
   );
 
-  /*$curl = curl_init($url);
-  curl_setopt($curl, CURLOPT_POST, TRUE);
-  curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
-  curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
-  $fullresponse = json_decode(curl_exec($curl));
-  curl_close($curl);*/
-
+  // Decode data (JSON) from request body
   $fullresponse_body_encoded = drupal_http_request($url, $options)->data;
   $fullresponse_body_decoded = drupal_json_decode($fullresponse_body_encoded);
-
-  // drupal_set_message(t(($fullresponse_body_decoded[0]['fullname'])),'warning');
 
   // Recording authentication on database
   $record = array(
