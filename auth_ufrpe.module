@@ -36,11 +36,7 @@ function auth_ufrpe_menu()
 function auth_ufrpe_block_info()
 {
   $blocks['auth_ufrpe'] = array(
-<<<<<<< HEAD
     'info' => t('Autenticação CPA'),
-=======
-    'info' => t('Autenticação'),
->>>>>>> 8ec9885d59fd53967b08e2acad45c19487d40548
     'cache' => DRUPAL_CACHE_GLOBAL,
   );
 
@@ -56,11 +52,7 @@ function auth_ufrpe_block_view($delta='')
   $block = array();
 
   if ($delta == 'auth_ufrpe') {
-<<<<<<< HEAD
     $block['subject'] = t('Autenticação CPA');
-=======
-    $block['subject'] = t('Autenticação');
->>>>>>> 8ec9885d59fd53967b08e2acad45c19487d40548
     $block['content'] = drupal_get_form('auth_ufrpe_form');
   }
 

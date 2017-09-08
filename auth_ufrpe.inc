@@ -138,10 +138,27 @@ function get_advanced_user_info($subresponse, $response)
   );
 
   try {
+    // Write record on database
     drupal_write_record('auth_ufrpe', $record);
   } catch (Exception $e) {
     // In case of double authentication
     // at same period
     drupal_set_message(t('Usuário já autenticado neste período'),'error');
+    return;
   }
+
+  // Processing informations for use in redirection
+  $profile = strtolower(substr($record['perfil'], 0, 3));
+  $modality = strtolower(substr($record['modalidade'], 0, 3));
+
+  // Get URL from database
+  $url = db_select('auth_ufrpe_settings', 'auth')
+  ->fields('auth')
+  ->condition('ano', date('Y'))
+  ->condition('semestre', getSemester((int) date('m')))
+  ->execute()
+  ->fetchAssoc();
+
+  // Redirect user to proper webform
+  drupal_goto($url[$profile.'_'.$modality]);
 }
