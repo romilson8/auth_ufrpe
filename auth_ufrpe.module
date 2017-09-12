@@ -60,3 +60,21 @@ function auth_ufrpe_block_view($delta='')
 
   return $block;
 }
+
+/**
+ * Implementation of hook_token_info()
+ *
+ * TODO: Implementar tokens do módulo
+ * @see hook_tokens()
+ */
+function auth_ufrpe_token_info()
+{
+  $tokens = array();
+
+  $tokens['types'] = array(
+    'current-auth' => array(
+      'name' => t('Usuário atual'),
+      'description' => t('Usuário autenticado atual'),
+    ),
+  );
+}
