@@ -143,7 +143,7 @@ function get_advanced_user_info($subresponse, $response)
   } catch (Exception $e) {
     // In case of double authentication
     // at same period
-    drupal_set_message(t('Usuário já autenticado neste período'),'error');
+    drupal_set_message(t('Usuário já autenticado neste período.'),'error');
     return;
   }
 
@@ -151,8 +151,8 @@ function get_advanced_user_info($subresponse, $response)
   $profile = strtolower(substr($record['perfil'], 0, 3));
   $modality = strtolower(substr($record['modalidade'], 0, 3));
 
-  // Get URL from database
-  $url = db_select('auth_ufrpe_settings', 'auth')
+  // Get path from database
+  $path = db_select('auth_ufrpe_settings', 'auth')
   ->fields('auth')
   ->condition('ano', date('Y'))
   ->condition('semestre', getSemester((int) date('m')))
@@ -160,5 +160,5 @@ function get_advanced_user_info($subresponse, $response)
   ->fetchAssoc();
 
   // Redirect user to proper webform
-  drupal_goto($url[$profile.'_'.$modality]);
+  drupal_goto($path[$profile.'_'.$modality]);
 }

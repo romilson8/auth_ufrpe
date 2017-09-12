@@ -18,55 +18,55 @@ require_once 'custom_functions.php';
 
 function auth_ufrpe_settings_form($form, &$form_state)
 {
-  // Define what will be the urls of the CPA webforms
+  // Define what will be the paths of the CPA webforms
 
-  $form['auth_ufrpe_cpa_presential_urls'] = array(
+  $form['auth_ufrpe_cpa_presential_paths'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Links para webforms CPA Presencial'),
+    '#title' => t('Caminhos para webforms CPA Presencial'),
     '#collapsible' => FALSE,
     '#collapsed' => FALSE,
-    '#description' => 'Links dos webforms para a modalidade presencial.',
+    '#description' => 'Caminhos dos webforms para a modalidade presencial.',
   );
 
-  $form['auth_ufrpe_cpa_presential_urls']['docente-presencial'] = array(
+  $form['auth_ufrpe_cpa_presential_paths']['docente-presencial'] = array(
     '#type' => 'textfield',
     '#title' => t('Docente presencial:'),
     '#required' => TRUE,
   );
 
-  $form['auth_ufrpe_cpa_presential_urls']['discente-presencial'] = array(
+  $form['auth_ufrpe_cpa_presential_paths']['discente-presencial'] = array(
     '#type' => 'textfield',
     '#title' => t('Discente presencial:'),
     '#required' => TRUE,
   );
 
-  $form['auth_ufrpe_cpa_presential_urls']['tecnico-presencial'] = array(
+  $form['auth_ufrpe_cpa_presential_paths']['tecnico-presencial'] = array(
     '#type' => 'textfield',
     '#title' => t('Técnico presencial:'),
     '#required' => TRUE,
   );
 
-  $form['auth_ufrpe_cpa_e-learning_urls'] = array(
+  $form['auth_ufrpe_cpa_e-learning_paths'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Links para webforms CPA EAD'),
+    '#title' => t('Caminhos para webforms CPA EAD'),
     '#collapsible' => FALSE,
     '#collapsed' => FALSE,
-    '#description' => 'Links dos webforms para a modalidade EAD.'
+    '#description' => 'Caminhos dos webforms para a modalidade EAD.'
   );
 
-  $form['auth_ufrpe_cpa_e-learning_urls']['docente-ead'] = array(
+  $form['auth_ufrpe_cpa_e-learning_paths']['docente-ead'] = array(
     '#type' => 'textfield',
     '#title' => t('Docente EAD:'),
     '#required' => TRUE,
   );
 
-  $form['auth_ufrpe_cpa_e-learning_urls']['discente-ead'] = array(
+  $form['auth_ufrpe_cpa_e-learning_paths']['discente-ead'] = array(
     '#type' => 'textfield',
     '#title' => t('Discente EAD:'),
     '#required' => TRUE,
   );
 
-  $form['auth_ufrpe_cpa_e-learning_urls']['tecnico-ead'] = array(
+  $form['auth_ufrpe_cpa_e-learning_paths']['tecnico-ead'] = array(
     '#type' => 'textfield',
     '#title' => t('Técnico EAD:'),
     '#required' => TRUE,
@@ -87,15 +87,15 @@ function auth_ufrpe_settings_form($form, &$form_state)
 
 function auth_ufrpe_settings_form_submit($form, &$form_state)
 {
-  if (validate_settings_URLs($form)) {
+  if (validate_settings_paths($form)) {
     // Get current settings and insert on database
     $record = array(
-      'doc_pre' => $form['auth_ufrpe_cpa_presential_urls']['docente-presencial']['#value'],
-      'dis_pre' => $form['auth_ufrpe_cpa_presential_urls']['discente-presencial']['#value'],
-      'tec_pre' => $form['auth_ufrpe_cpa_presential_urls']['tecnico-presencial']['#value'],
-      'doc_ead' => $form['auth_ufrpe_cpa_e-learning_urls']['docente-ead']['#value'],
-      'dis_ead' => $form['auth_ufrpe_cpa_e-learning_urls']['discente-ead']['#value'],
-      'tec_ead' => $form['auth_ufrpe_cpa_e-learning_urls']['tecnico-ead']['#value'],
+      'doc_pre' => $form['auth_ufrpe_cpa_presential_paths']['docente-presencial']['#value'],
+      'dis_pre' => $form['auth_ufrpe_cpa_presential_paths']['discente-presencial']['#value'],
+      'tec_pre' => $form['auth_ufrpe_cpa_presential_paths']['tecnico-presencial']['#value'],
+      'doc_ead' => $form['auth_ufrpe_cpa_e-learning_paths']['docente-ead']['#value'],
+      'dis_ead' => $form['auth_ufrpe_cpa_e-learning_paths']['discente-ead']['#value'],
+      'tec_ead' => $form['auth_ufrpe_cpa_e-learning_paths']['tecnico-ead']['#value'],
       'ano' => date('Y'),
       'semestre' => getSemester((int) date('m')),
     );
@@ -106,38 +106,38 @@ function auth_ufrpe_settings_form_submit($form, &$form_state)
     } catch (Exception $e) {
       // Administer must not update settings more than
       // one time per semester
-      drupal_set_message(t('Os links já foram atualizados este período. Por favor entrar em contato com o suporte do NTI-UFRPE.'), 'error');
+      drupal_set_message(t('Os caminhos já foram atualizados este período. Por favor entrar em contato com o suporte do NTI-UFRPE.'), 'error');
       drupal_set_message(t('Contato: suporte.nti@ufrpe.br'), 'error');
     }
   }
 }
 
 /**
- * Analyze if the given urls are valid
+ * Analyze if the given paths are valid
  *
  * @return bool
- *  TRUE if the settings urls given are valid
+ *  TRUE if the settings paths given are valid
  *  FALSE otherwise
  */
 
-function validate_settings_URLs($form)
+function validate_settings_paths($form)
 {
   // Set modalities and profiles
   $modalities = array('presencial' => '_presential_', 'ead' => '_e-learning_');
   $profiles = array('docente', 'discente', 'tecnico');
 
-  // Process urls given
+  // Process paths given
   foreach ($modalities as $modality_suffix => $modality_fieldset) {
     foreach ($profiles as $profile) {
-      // URL that will be writed on database
-      $currentURL = $form['auth_ufrpe_cpa'.$modality_fieldset.'urls'][$profile.'-'.$modality_suffix]['#value'];
-      // Path of the URL
-      $current_normal_path = drupal_get_normal_path($currentURL);
+      // Path that will be writed on database (possible Alias)
+      $current_path = $form['auth_ufrpe_cpa'.$modality_fieldset.'paths'][$profile.'-'.$modality_suffix]['#value'];
+      // Path registered in Drupal system (node/*)
+      $current_normal_path = drupal_get_normal_path($current_path);
 
       if (!drupal_valid_path($current_normal_path)) {
-        // URL must be internal and valid
-        drupal_set_message(t('Link para '.$profile.' '.$modality_suffix.' inválido.'), 'error');
-        drupal_set_message(t('O link deve ser interno e válido (webform já existente)'),'error');
+        // Path must be internal and valid
+        drupal_set_message(t('Caminho para '.$profile.' '.$modality_suffix.' inválido ou incorreto.'), 'error');
+        drupal_set_message(t('O caminho deve dar em um conteúdo do tipo Webform.'),'error');
         return FALSE;
       }
 
@@ -148,8 +148,8 @@ function validate_settings_URLs($form)
                                     ->execute()
                                     ->fetchAssoc();
       if ($node['type'] != 'webform') {
-        // URL must lead to a webform content
-        drupal_set_message(t('O conteúdo do link de '.$profile.' '.$modality_suffix.' deve ser do tipo webform.'),'error');
+        // Path must lead to a webform content
+        drupal_set_message(t('O conteúdo do caminho de '.$profile.' '.$modality_suffix.' deve ser do tipo webform.'),'error');
         return FALSE;
       }
     }
