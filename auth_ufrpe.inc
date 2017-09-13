@@ -137,6 +137,12 @@ function get_advanced_user_info($subresponse, $response)
     'modalidade' => 'PRESENCIAL',
   );
 
+  // Starts session of the user authenticated
+  drupal_session_start();
+  foreach ($record as $key => $value) {
+    $_SESSION[$key] = $value;
+  }
+
   try {
     // Write record on database
     drupal_write_record('auth_ufrpe', $record);

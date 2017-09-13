@@ -63,18 +63,59 @@ function auth_ufrpe_block_view($delta='')
 
 /**
  * Implementation of hook_token_info()
- *
- * TODO: Implementar tokens do módulo
- * @see hook_tokens()
  */
+
 function auth_ufrpe_token_info()
 {
-  $tokens = array();
+  $info = array();
 
-  $tokens['types'] = array(
+  $info['types'] = array(
+    // [current-auth:]
     'current-auth' => array(
-      'name' => t('Usuário atual'),
-      'description' => t('Usuário autenticado atual'),
+      'name' => t('Current user'),
+      'description' => t('Current authenticated user.'),
     ),
   );
+
+  $info['tokens'] = array(
+    'current-auth' => array(
+      // [current-auth:cpf]
+      'cpf' => array(
+        'name' => t('CPF'),
+        'description' => t('The Register for Physical Person of the current user.')
+      ),
+      // [current-auth:nome]
+      'nome' => array(
+        'name' => t('Name'),
+        'description' => t('The name of the current user.'),
+      ),
+    ),
+  );
+
+  return $info;
+}
+
+/**
+ * Implementation of hook_tokens()
+ */
+
+function auth_ufrpe_tokens($type, $tokens, $data = array(), $options = array())
+{
+  $replacements = array();
+  drupal_session_start();
+
+  if ($type == 'current-auth') {
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'cpf':
+          $replacements[$original] = $_SESSION['cpf'];
+          break;
+        case 'nome':
+          $replacements[$original] = $_SESSION['nome'];
+          break;
+      }
+    }
+  }
+
+  return $replacements;
 }
