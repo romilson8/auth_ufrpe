@@ -9,6 +9,7 @@
 
 // Importing functions from file
 require_once 'custom_functions.php';
+// Teste
 
 /**
  * Implementation of authentication form
